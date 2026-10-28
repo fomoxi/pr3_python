@@ -83,7 +83,58 @@ def find_name_by_phone(book, target_phone):
 
 
 # тут розробник 2 додасть свої функції у гілці feature-improvements
-
+# === НОВІ ФУНКЦІЇ ВІД РОЗРОБНИКА 2 ===
+def update_phone(book, surname, new_phone):
+    # зміна номера існуючого контакту
+    surname = surname.strip().capitalize()
+    new_phone = new_phone.strip()
+    if not new_phone.isdigit() or len(new_phone) < 10:
+        print("номер має містити від 10 цифр")
+        return
+    try:
+        if surname not in book:
+            raise KeyError(surname)
+        old_phone = book[surname]
+        book[surname] = new_phone
+        print(f"номер для {surname} змінено: {old_phone} -> {new_phone}")
+    except KeyError:
+        print(f"помилка: контакту {surname} немає в записнику")
+def filter_by_operator(book, code):
+    # пошук за кодом оператора
+    code = code.strip()
+    matches = {s: p for s, p in book.items() if p.startswith(code)}
+    if matches:
+        print(f"\nконтакти з кодом {code} ({len(matches)} знайдено):")
+        for s, p in sorted(matches.items()):
+            print(f"{s}: {p}")
+    else:
+        print(f"контактів з кодом {code} не знайдено")
+def display_operator_statistics(book):
+    # статистика операторів
+    if not book:
+        print("\nзаписник порожній")
+        return
+    operators = {
+        "Vodafone (050, 066, 095, 099)": ("050", "066", "095", "099"),
+        "Київстар (067, 068, 096, 097, 098)": ("067", "068", "096", "097", "098"),
+        "lifecell (063, 073, 093)": ("063", "073", "093"),
+    }
+    stats = {name: 0 for name in operators}
+    stats["інші"] = 0
+    for phone in book.values():
+        matched = False
+        for op, prefixes in operators.items():
+            if phone.startswith(prefixes):
+                stats[op] += 1
+                matched = True
+                break
+        if not matched:
+            stats["інші"] += 1
+    print("\nстатистика по операторах:")
+    print(f"всього контактів: {len(book)}")
+    for op, count in stats.items():
+        pct = (count / len(book)) * 100 if book else 0
+        print(f"- {op}: {count} ({pct:.0f}%)")
 
 def main():
     phonebook = {
