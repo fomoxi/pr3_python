@@ -1,12 +1,6 @@
-# командна робота: базова версія тімліда (гілка main)
-# склад команди:
-# тімлід - Дерновий Микита
-# розробник 2 - Коваленко Антон
-
-# todo для розробник 2:
-# 1) зробити функцію update_phone для зміни номера
-# 2) зробити функцію filter_by_operator для пошуку за кодом
-# 3) зробити функцію display_operator_statistics для статистики
+# командний проєкт: телефонний довідник
+# тімлід: Дерновий Микита
+# розробник 2: Коваленко Антон
 
 
 def display_all(book):
@@ -82,15 +76,18 @@ def find_name_by_phone(book, target_phone):
         print(f"номер {target_phone} не знайдено")
 
 
-# тут розробник 2 додасть свої функції у гілці feature-improvements
 # === НОВІ ФУНКЦІЇ ВІД РОЗРОБНИКА 2 ===
+
+
 def update_phone(book, surname, new_phone):
     # зміна номера існуючого контакту
     surname = surname.strip().capitalize()
     new_phone = new_phone.strip()
+
     if not new_phone.isdigit() or len(new_phone) < 10:
         print("номер має містити від 10 цифр")
         return
+
     try:
         if surname not in book:
             raise KeyError(surname)
@@ -99,28 +96,36 @@ def update_phone(book, surname, new_phone):
         print(f"номер для {surname} змінено: {old_phone} -> {new_phone}")
     except KeyError:
         print(f"помилка: контакту {surname} немає в записнику")
+
+
 def filter_by_operator(book, code):
     # пошук за кодом оператора
     code = code.strip()
     matches = {s: p for s, p in book.items() if p.startswith(code)}
+
     if matches:
         print(f"\nконтакти з кодом {code} ({len(matches)} знайдено):")
         for s, p in sorted(matches.items()):
             print(f"{s}: {p}")
     else:
         print(f"контактів з кодом {code} не знайдено")
+
+
 def display_operator_statistics(book):
     # статистика операторів
     if not book:
         print("\nзаписник порожній")
         return
+
     operators = {
         "Vodafone (050, 066, 095, 099)": ("050", "066", "095", "099"),
         "Київстар (067, 068, 096, 097, 098)": ("067", "068", "096", "097", "098"),
         "lifecell (063, 073, 093)": ("063", "073", "093"),
     }
+
     stats = {name: 0 for name in operators}
     stats["інші"] = 0
+
     for phone in book.values():
         matched = False
         for op, prefixes in operators.items():
@@ -130,11 +135,13 @@ def display_operator_statistics(book):
                 break
         if not matched:
             stats["інші"] += 1
+
     print("\nстатистика по операторах:")
     print(f"всього контактів: {len(book)}")
     for op, count in stats.items():
         pct = (count / len(book)) * 100 if book else 0
         print(f"- {op}: {count} ({pct:.0f}%)")
+
 
 def main():
     phonebook = {
@@ -151,13 +158,16 @@ def main():
     }
 
     while True:
-        print("\nкомандний проєкт (базова версія v1):")
+        print("\nменю спільного проєкту:")
         print("1 - показати всі контакти")
         print("2 - знайти телефон за прізвищем")
         print("3 - знайти прізвище за номером")
         print("4 - додати контакт")
         print("5 - видалити контакт")
         print("6 - сортувати за алфавітом")
+        print("7 - змінити номер")
+        print("8 - пошук за кодом оператора")
+        print("9 - статистика операторів")
         print("0 - вихід")
 
         choice = input("оберіть дію: ").strip()
@@ -179,6 +189,15 @@ def main():
             delete_entry(phonebook, surname)
         elif choice == "6":
             display_sorted(phonebook)
+        elif choice == "7":
+            surname = input("введіть прізвище: ")
+            new_phone = input("введіть новий номер: ")
+            update_phone(phonebook, surname, new_phone)
+        elif choice == "8":
+            code = input("введіть код оператора (050, 067): ")
+            filter_by_operator(phonebook, code)
+        elif choice == "9":
+            display_operator_statistics(phonebook)
         elif choice == "0":
             print("роботу завершено")
             break
